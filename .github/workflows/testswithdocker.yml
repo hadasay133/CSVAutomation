@@ -1,13 +1,17 @@
-name: Run Tests and Generate Allure Report in Project Root
+name: Run Selenium Tests with Docker Grid
 
 on:
   push:
     branches: [ main ]
-  pull_request:
 
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    services:
+      docker:
+        image: docker:24.0.5
+        options: --privileged
 
     steps:
       - name: Checkout code
@@ -19,28 +23,18 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Install Latest Chrome and Xvfb
+      - name: Set up Docker Compose
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget gnupg2 xvfb
+          sudo apt-get install -y docker-compose
 
-          # הוספת מפתח האימות של Google
-          wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-
-          # הוספת ריפוזיטורי של Google Chrome
-          echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
-
-          # עדכון והרצת התקנה של הגרסה הכי עדכנית
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
-
-      - name: Check Chrome Version
-        run: google-chrome-stable --version
-
-      - name: Run tests with GUI support (Xvfb)
+      - name: Start Selenium Grid
         run: |
-          export DISPLAY=:99
-          Xvfb :99 -ac &
+          docker-compose up -d
+          sleep 10  
+
+      - name: Run Tests
+        run: |
           mvn clean test
 
       - name: Generate Allure Report
