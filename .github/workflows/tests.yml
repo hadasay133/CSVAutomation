@@ -1,0 +1,58 @@
+name: Run Tests and Generate Allure Report in Project Root
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Install Latest Chrome and Xvfb
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget gnupg2 xvfb
+
+          # הוספת מפתח האימות של Google
+          wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+
+          # הוספת ריפוזיטורי של Google Chrome
+          echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+
+          # עדכון והרצת התקנה של הגרסה הכי עדכנית
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+
+      - name: Check Chrome Version
+        run: google-chrome-stable --version
+
+      - name: Run tests with GUI support (Xvfb)
+        run: |
+          export DISPLAY=:99
+          Xvfb :99 -ac &
+          mvn clean test
+
+      - name: Generate Allure Report
+        run: |
+          wget https://github.com/allure-framework/allure2/releases/download/2.30.0/allure-2.30.0.tgz
+          tar -xvzf allure-2.30.0.tgz
+          sudo mv allure-2.30.0 /opt/allure
+          sudo ln -s /opt/allure/bin/allure /usr/bin/allure
+          allure generate target/allure-results --clean -o allure-report
+
+      - name: Upload Allure Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report

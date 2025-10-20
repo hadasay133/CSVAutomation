@@ -1,7 +1,12 @@
 package UITest;
 
+
 import CsvFiles.CSVHandler;
 import com.opencsv.exceptions.CsvValidationException;
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import org.pages.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -13,17 +18,18 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
 import java.io.IOException;
 
 public class TestTask {
-    private WebDriver driver;
-    private final MainPage MainPage;
-    private CSVHandler csvHandler;
+    MainPage mainPage;
+    CSVHandler csvHandler;
+    WebDriver driver;
 
     public TestTask() {
         driver = new ChromeDriver();
         csvHandler = new CSVHandler("C:\\Users\\USER\\Documents\\Excels\\Student.csv");
-        MainPage = new MainPage(driver);
+        mainPage = new MainPage(driver);
     }
 
     @BeforeClass
@@ -34,15 +40,17 @@ public class TestTask {
 
 
     @Test
-    public void checkTheTitle() throws CsvValidationException, IOException {
-        StudentPage studentPage = (StudentPage) MainPage.clickOnHrefOfMainPage(HrefOfMainPage.STUDENT);
-        studentPage.enterClassId(csvHandler.getWordByNumber(csvHandler.readCSV(),1,0));
+    @Severity(SeverityLevel.CRITICAL)
+    @Feature("UI Flow")
+    @Description("check the title of page - UI flow")
+    public void TestCheckTheTitle() throws CsvValidationException, IOException {
+        StudentPage studentPage = (StudentPage) mainPage.clickOnHrefOfMainPage(HrefOfMainPage.STUDENT);
+        studentPage.enterClassId(csvHandler.getWordByNumber(csvHandler.readCSV(), 1, 0));
         studentPage.clickOnOptionDisplayNames(OptionOfDisplayName.LAST_NOSPACE_FIRST);
         studentPage.selectSecretQuestion("What was the name of the first album that you bought?");
         DisagreePage disagreePage = studentPage.clickOnDisagreeHref();
         String titleOfDisagreePage = disagreePage.getTitle();
-        Assert.assertEquals("Empower students to do their best,\n" + "original work", titleOfDisagreePage);
-
+        Assert.assertEquals("Bring transparency to the writing process with Turnitin Clarity", titleOfDisagreePage);
 
     }
 

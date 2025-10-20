@@ -10,7 +10,6 @@ import org.pages.DisagreePage;
 
 public class StudentPage extends BasePage {
 
-    WebElement title = driver.findElement(By.cssSelector("div[id='ibox_form'] div"));
     WebElement classId = driver.findElement(By.cssSelector("input[id='id']"));
     WebElement firstOptionRadioButton = driver.findElement(By.cssSelector("label[for='first_space_last'] "));
     WebElement secondOptionRadioButton = driver.findElement(By.cssSelector("label[for='last_space_first']"));
@@ -24,9 +23,6 @@ public class StudentPage extends BasePage {
     }
 
 
-    public String getTitleText() {
-        return super.getText(title);
-    }
 
     public void enterClassId(String text) {
         super.sendKeys(classId, text);
