@@ -38,7 +38,7 @@ public class TestTask {
     public void setUp() throws MalformedURLException {
         ChromeOptions options = new ChromeOptions();
         RemoteWebDriver driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), options);
-        csvHandler = new CSVHandler("C:\\Users\\USER\\Documents\\Excels\\Student.csv");
+        csvHandler = new CSVHandler("csv.txt");
         mainPage = new MainPage(driver);
         driver.manage().window().maximize();
         driver.get("https://www.turnitin.com/newuser_join.asp?svr=6&session-id=af3f072630384dea9a781a729650f8a9&lang=en_us&r=60.0095127327982");

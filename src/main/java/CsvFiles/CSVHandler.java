@@ -31,7 +31,7 @@ public class CSVHandler {
     }
 
     public String getWordByNumber(List<String[]>data,int line,int row){
-        String [] lines= data.get(line);
+        String [] lines= data. get(line-1);
         return lines[row];
 
     }
